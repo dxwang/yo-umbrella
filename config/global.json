@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "_default": {
+            "link": "yo-umbrella"
+        }, 
+        "yo-umbrella": {
+            "applicationId": "YYQgTRcQzA8bUxjo5xTxDIF40hg7SLS22MSa9bLQ", 
+            "masterKey": "oXq6gc2IvrBnlB98AO2gOfPpYXXh2eaLCNEOVUf4"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.1"
+    }
+}
