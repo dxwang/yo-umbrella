@@ -472,10 +472,16 @@ h1 {
   line-height: 9.7rem;
 }
 
-/* line 36, ../sass/main.scss */
+/* line 35, ../sass/main.scss */
 a {
+  text-decoration: none;
+  color: white;
+}
+
+/* line 40, ../sass/main.scss */
+a.button {
   padding: 3rem;
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: rgba(255, 255, 255, 0.97);
   border-radius: 5px;
   color: #9b59b6;
   font-size: 1.5rem;
@@ -485,25 +491,25 @@ a {
   margin-bottom: 2rem;
 }
 @media (max-width: 900px) {
-  /* line 36, ../sass/main.scss */
-  a {
+  /* line 40, ../sass/main.scss */
+  a.button {
     font-size: 4rem;
   }
 }
-/* line 49, ../sass/main.scss */
-a:hover {
+/* line 53, ../sass/main.scss */
+a.button:hover {
   box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
   color: #713b87;
   background-color: white;
 }
 
-/* line 56, ../sass/main.scss */
+/* line 60, ../sass/main.scss */
 p {
   margin-bottom: 3rem;
   opacity: 0.25;
 }
 @media (max-width: 900px) {
-  /* line 56, ../sass/main.scss */
+  /* line 60, ../sass/main.scss */
   p {
     font-size: 2.5rem;
   }
