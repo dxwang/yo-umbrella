@@ -1,7 +1,5 @@
 var express = require('express');
 var app = express();
-var GOOG_API_KEY='AIzaSyBd11992i4WZ1IfIaJKgCbywggEcKLHoJo';
-var YAHOO_API_KEY='dj0yJmk9bllNNVEzSjYydTJHJmQ9WVdrOVJVMUVhRTVCTlRBbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0xYw--'
 
 app.get('/update', function(req, res) {
   if (!req.query || !req.query.username || !req.query.location) {
@@ -10,86 +8,60 @@ app.get('/update', function(req, res) {
   }
 
   var latLng = req.query.location.split(';').map(parseFloat);
+  var timestamp = Math.round(new Date() / 1000);
 
-  getTimeZoneOffset(
-    latLng[0],
-    latLng[1],
-    Math.round(new Date() / 1000),
-    req,
-    res
-  );
-});
+  Parse.Config.get().then(function(config) {
 
-function getTimeZoneOffset(lat, lng, timestamp, req, res) {
-  var url = 'https://maps.googleapis.com/maps/api/timezone/json';
-  var url_params = {
-    location: lat + ',' + lng,
-    timestamp: timestamp,
-    key: GOOG_API_KEY
-  }
+    Parse.Cloud.httpRequest({
+      url: 'https://maps.googleapis.com/maps/api/timezone/json',
+      params: {
+        location: latLng.join(','),
+        timestamp: timestamp,
+        key: config.get('GOOG_API_KEY')
+      },
+      success: function(httpResponse) {
+        var data = httpResponse.data;
+        var timeZoneOffset = data.dstOffset + data.rawOffset;
 
-  Parse.Cloud.httpRequest({
-    url: url,
-    success: function(httpResponse) {
-      var data = httpResponse.data;
-      req.timeZoneOffset = (data.dstOffset + data.rawOffset) / 3600;
-      getWoeId(lat, lng, req, res);
-    },
-    error: function(httpResponse) {
-      console.error('Request failed with response code ' + httpResponse.status);
-    }
-  });
-}
+        Parse.Cloud.httpRequest({
+          url: "http://where.yahooapis.com/v1/places.q('" + latLng.join(',') + "')",
+          params: {
+            format: 'json',
+            appid: config.get('YAHOO_API_KEY')
+          },
+          success: function(httpResponse) {
+            var woeId = httpResponse.data.places.place[0]['locality1 attrs']['woeid'];
+            var user = req.query.username;
 
-function getWoeId(lat, lng, req, res) {
-  var url = ([
-    "http://where.yahooapis.com/v1/places.",
-    "q('" + lat + "," + lng + "')"
-  ]).join('');
+            var UserLocation = Parse.Object.extend('UserLocation');
+            var query = new Parse.Query(UserLocation);
+            query.equalTo('user', user);
+            query.first().then(function(userLocation) {
+              userLocation = userLocation || new UserLocation();
+              userLocation.set('user', user);
+              userLocation.set('woeid', woeId);
+              userLocation.set('timezoneoffset', timeZoneOffset);
 
-  var url_params = {
-    format: 'json',
-    appid: YAHOO_API_KEY
-  }
-
-  Parse.Cloud.httpRequest({
-    url: url,
-    params: url_params,
-    success: function(httpResponse) {
-      var data = httpResponse.data;
-      req.woeId = data.places.place[0]['locality1 attrs']['woeid'];
-      saveUser(req, res);
-    },
-    error: function(httpResponse) {
-      console.error('Request failed with response code ' + httpResponse.status);
-    }
-  });
-}
-
-function saveUser(req, res) {
-  var UserLocation = Parse.Object.extend('UserLocation');
-  var user = req.query.username;
-  var latLng = req.query.location.split(';').map(parseFloat);
-  var location = new Parse.GeoPoint(latLng[0], latLng[1]);
-  var woeId = req.woeId;
-  var timeZoneOffset = req.timeZoneOffset;
-
-  var query = new Parse.Query(UserLocation);
-  query.equalTo('user', user);
-  query.first().then(function(userLocation) {
-    userLocation = userLocation || new UserLocation();
-    userLocation.set('user', user);
-    userLocation.set('location', location);
-    userLocation.set('woeid', woeId);
-    userLocation.set('timezoneoffset', timeZoneOffset);
-
-    userLocation.save().then(function(message) {
-      res.send('User location updated');
-    }, function(error) {
-      res.status(500);
-      res.send('Could not update user location');
+              userLocation.save().then(function(message) {
+                res.send('User location updated');
+              }, function(error) {
+                res.status(500);
+                res.send('Could not update user location');
+              });
+            });
+          },
+          error: function(httpResponse) {
+            console.error('Request failed with response code ' + httpResponse.status);
+          }
+        });
+      },
+      error: function(httpResponse) {
+        console.error('Request failed with response code ' + httpResponse.status);
+      }
     });
+  }, function(error) {
+    // Something went wrong - could not get config
   });
-}
+});
 
 app.listen();
