@@ -21,18 +21,18 @@ app.get('/update', function(req, res) {
 });
 
 function getTimeZoneOffset(lat, lng, timestamp, req, res) {
-  var url = ([
-    'https://maps.googleapis.com/maps/api/timezone/json?',
-    'location=' + lat + ',' + lng,
-    '&timestamp=' + timestamp,
-    '&key=' + GOOG_API_KEY
-  ]).join('');
+  var url = 'https://maps.googleapis.com/maps/api/timezone/json';
+  var url_params = {
+    location: lat + ',' + lng,
+    timestamp: timestamp,
+    key: GOOG_API_KEY
+  }
 
   Parse.Cloud.httpRequest({
     url: url,
     success: function(httpResponse) {
       var data = httpResponse.data;
-      req.timeZoneOffset = data.dstOffset + data.rawOffset;
+      req.timeZoneOffset = (data.dstOffset + data.rawOffset) / 3600;
       getWoeId(lat, lng, req, res);
     },
     error: function(httpResponse) {
@@ -44,13 +44,17 @@ function getTimeZoneOffset(lat, lng, timestamp, req, res) {
 function getWoeId(lat, lng, req, res) {
   var url = ([
     "http://where.yahooapis.com/v1/places.",
-    "q('" + lat + "," + lng + "')",
-    "?format=json",
-    "&appid=" + YAHOO_API_KEY
+    "q('" + lat + "," + lng + "')"
   ]).join('');
+
+  var url_params = {
+    format: 'json',
+    appid: YAHOO_API_KEY
+  }
 
   Parse.Cloud.httpRequest({
     url: url,
+    params: url_params,
     success: function(httpResponse) {
       var data = httpResponse.data;
       req.woeId = data.places.place[0]['locality1 attrs']['woeid'];
