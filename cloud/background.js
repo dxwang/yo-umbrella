@@ -1,10 +1,10 @@
 Parse.Cloud.job('background', function(request, status) {
   var UserLocation = Parse.Object.extend('UserLocation');
   var date = new Date
-  var timeZoneQuery = 7 - ((date.getHours() + (date.getTimezoneOffset() / 60)) % 24); // TODO(kevin): put 7 in config
+  var timeZoneQuery = (7 - ((date.getHours() + (date.getTimezoneOffset() / 60)) % 24)) * 3600; // TODO(kevin): put 7 in config
 
   var query = new Parse.Query(UserLocation);
-  //query.equalTo('timezoneoffset', timeZoneQuery);
+  query.equalTo('timezoneoffset', timeZoneQuery);
   query.find().then(function(userLocations) {
     userLocations.forEach(function(userLocation) {
       isGonRain(userLocation, status);

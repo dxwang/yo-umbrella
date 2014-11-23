@@ -8,7 +8,7 @@ app.get('/update', function(req, res) {
   }
 
   var latLng = req.query.location.split(';').map(parseFloat);
-  var timestamp = Math.round(new Date() / 1000);
+  var timestamp = Math.round(Date.now() / 1000);
 
   Parse.Config.get().then(function(config) {
 
