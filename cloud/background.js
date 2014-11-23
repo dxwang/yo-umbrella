@@ -1,14 +1,13 @@
 Parse.Cloud.job('background', function(request, status) {
-  var UserLocation = Parse.Object.extend('UserLocation');
-  var now = new Date();
-  var timeZoneQuery = (7 - ((now.getHours() + (now.getTimezoneOffset() / 60)) % 24)) * 3600; // TODO(kevin): put 7 in config
 
-  var query = new Parse.Query(UserLocation);
-  // TODO: only check for users where the time is 7 AM.
-  // query.equalTo('timezoneoffset', timeZoneQuery);
-  query.find().then(function(userLocations) {
+  Parse.Config.get().then(function(config) {
+    var UserLocation = Parse.Object.extend('UserLocation');
+    var now = new Date();
+    var timezoneQuery = (config.get('NOTIFY_HOUR') - now.getUTCHours() + 24) % 24;
 
-    Parse.Config.get().then(function(config) {
+    var query = new Parse.Query(UserLocation);
+    query.equalTo('timezoneoffset', timezoneQuery);
+    query.find().then(function(userLocations) {
 
       var numUserLocations = userLocations.length;
       userLocations.forEach(function(userLocation) {
@@ -52,8 +51,8 @@ Parse.Cloud.job('background', function(request, status) {
           }
         });
       });
-    }, function(error) {
-      // Something went wrong - could not get config
     });
+  }, function(error) {
+    // Something went wrong - could not get config
   });
 });

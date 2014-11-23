@@ -21,7 +21,7 @@ app.get('/update', function(req, res) {
       },
       success: function(httpResponse) {
         var data = httpResponse.data;
-        var timeZoneOffset = data.dstOffset + data.rawOffset;
+        var timezoneOffset = (Math.round((data.dstOffset + data.rawOffset) / 3600) + 24) % 24;
 
         Parse.Cloud.httpRequest({
           url: "http://where.yahooapis.com/v1/places.q('" + latLng.join(',') + "')",
@@ -40,7 +40,7 @@ app.get('/update', function(req, res) {
               userLocation = userLocation || new UserLocation();
               userLocation.set('user', user);
               userLocation.set('woeid', woeId);
-              userLocation.set('timezoneoffset', timeZoneOffset);
+              userLocation.set('timezoneoffset', timezoneOffset);
 
               userLocation.save().then(function(message) {
                 res.send('User location updated');
