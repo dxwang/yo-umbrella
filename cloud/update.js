@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 
-app.get('/update', function (req, res) {
+app.get('/update', function(req, res) {
   if (!req.query || !req.query.username || !req.query.location) {
     res.status(400);
     res.send('Missing username and/or location');
