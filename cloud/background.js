@@ -1,12 +1,12 @@
-var YAHOO_API_KEY='dj0yJmk9bllNNVEzSjYydTJHJmQ9WVdrOVJVMUVhRTVCTlRBbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0xYw--'
+var YAHOO_API_KEY='dj0yJmk9bllNNVEzSjYydTJHJmQ9WVdrOVJVMUVhRTVCTlRBbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0xYw--' // TODO(kevin): put in config
 
 Parse.Cloud.job('background', function(request, status) {
   var UserLocation = Parse.Object.extend('UserLocation');
   var date = new Date
-  var timeZoneQuery = 18 - ((date.getHours() + (date.getTimezoneOffset() / 60)) % 24);
+  var timeZoneQuery = 7 - ((date.getHours() + (date.getTimezoneOffset() / 60)) % 24); // TODO(kevin): put 7 in config
 
   var query = new Parse.Query(UserLocation);
-  // query.equalTo('timezoneoffset', timeZoneQuery);
+  query.equalTo('timezoneoffset', timeZoneQuery);
   query.find().then(function(userLocations) {
     userLocations.forEach(function(userLocation) {
       isGonRain(userLocation, status);
@@ -48,9 +48,9 @@ function notifyIsGonRain(userLocation) {
     method: 'POST',
     url: 'http://api.justyo.co/yo',
     body: {
-      'api_token': '8ffebfcf-8349-40a3-9b02-de10c01e56f4',
+      'api_token': '8ffebfcf-8349-40a3-9b02-de10c01e56f4', // TODO(kevin): put in config
       'username': userLocation.get('user'),
-      'link': 'https://www.youtube.com/watch?v=qnG85nI6TTU'
+      'link': 'https://www.youtube.com/watch?v=qnG85nI6TTU' // TODO(kevin): put in config
     }
   });
 }
