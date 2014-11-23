@@ -48,6 +48,44 @@ app.get('/update', function(req, res) {
                 res.status(500);
                 res.send('Could not update user location');
               });
+
+              // var weatherQuery = 'SELECT item.forecast FROM weather.forecast WHERE woeid = ' +
+              // woeId + ' LIMIT 1';                
+              // Parse.Cloud.httpRequest({
+              //   url: 'https://query.yahooapis.com/v1/public/yql',
+              //   params: {
+              //     q: weatherQuery,
+              //     format: 'json',
+              //     env: 'store://datatables.org/alltableswithkeys',
+              //     appid: config.get('YAHOO_API_KEY')
+              //   },
+              //   success: function(httpResponse) {
+
+              //     var data = httpResponse.data;
+              //     if (data.query.results && data.query.results.channel &&
+              //       data.query.results.channel.item && data.query.results.channel.item.forecast &&
+              //       data.query.results.channel.item.forecast.code) {
+
+              //       var code = parseInt(data.query.results.channel.item.forecast.code, 10);
+              //      //if ((code <= 17 || code == 35 || code >= 37) && code != 3200 && code != 0) {
+                      Parse.Cloud.httpRequest({
+                        method: 'POST',
+                        url: 'http://api.justyo.co/yo',
+                        body: {
+                          'api_token': config.get('YO_API_KEY'),
+                          'username': user,
+                          'link': config.get('YO_TO_USER_URL')
+                        }
+                      });
+              //       //}
+              //     }
+              //     //status.success('Success');
+              //   },
+              //   error: function(httpResponse) {
+              //     console.error("Uh oh, something went wrong.");
+              //     // status.error("Uh oh, something went wrong.");
+              //   }
+              // });
             });
           },
           error: function(httpResponse) {
