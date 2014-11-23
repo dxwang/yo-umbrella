@@ -42,15 +42,8 @@ app.get('/update', function(req, res) {
               userLocation.set('woeid', woeId);
               userLocation.set('timezoneoffset', timezoneOffset);
 
-              userLocation.save().then(function(message) {
-                res.send('User location updated');
-              }, function(error) {
-                res.status(500);
-                res.send('Could not update user location');
-              });
-
               // var weatherQuery = 'SELECT item.forecast FROM weather.forecast WHERE woeid = ' +
-              // woeId + ' LIMIT 1';                
+              //   woeId + ' LIMIT 1';
               // Parse.Cloud.httpRequest({
               //   url: 'https://query.yahooapis.com/v1/public/yql',
               //   params: {
@@ -74,18 +67,34 @@ app.get('/update', function(req, res) {
                         body: {
                           'api_token': config.get('YO_API_KEY'),
                           'username': user,
-                          'link': config.get('YO_TO_USER_URL')
+                          'link': config.get('ACK_USER_URL')
                         }
                       });
               //       //}
-              //     }
+                  // }
               //     //status.success('Success');
               //   },
               //   error: function(httpResponse) {
-              //     console.error("Uh oh, something went wrong.");
-              //     // status.error("Uh oh, something went wrong.");
+              //     Parse.Cloud.httpRequest({
+              //       method: 'POST',
+              //       url: 'http://api.justyo.co/yo',
+              //       body: {
+              //         'api_token': config.get('YO_API_KEY'),
+              //         'username': user,
+              //         'link': config.get('YO_TO_USER_URL')
+              //       }
+              //     });
+              // //     console.error("Uh oh, something went wrong.");
+              // //     // status.error("Uh oh, something went wrong.");
               //   }
               // });
+
+              userLocation.save().then(function(message) {
+                res.send('User location updated');
+              }, function(error) {
+                res.status(500);
+                res.send('Could not update user location');
+              });
             });
           },
           error: function(httpResponse) {
