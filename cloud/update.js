@@ -3,7 +3,7 @@ var app = express();
 var GOOG_API_KEY='AIzaSyBd11992i4WZ1IfIaJKgCbywggEcKLHoJo';
 var YAHOO_API_KEY='dj0yJmk9bllNNVEzSjYydTJHJmQ9WVdrOVJVMUVhRTVCTlRBbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0xYw--'
 
-app.get('/update', function (req, res) {
+app.get('/update', function(req, res) {
   if (!req.query || !req.query.username || !req.query.location) {
     res.status(400);
     res.send('Missing username and/or location');
