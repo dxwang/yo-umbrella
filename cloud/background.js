@@ -19,13 +19,17 @@ Parse.Cloud.job('background', function(request, status) {
 });
 
 function isGonRain(userLocation, status) {
+  var monthMap = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var date = new Date;
+  var today = ([date.getDate(), monthMap[date.getMonth()], date.getFullYear()]).join(' ');
   var url = 'https://query.yahooapis.com/v1/public/yql';
   var url_params = {
-    q: 'select item.condition from weather.forecast where woeid = ' + userLocation.get('woeid') + ' and (item.condition.code <= 17 or item.condition.code >= 37 or item.condition.code = 35) and item.condition.code != 3200',
+    q: 'select item.forecast from weather.forecast where woeid = ' + userLocation.get('woeid') + ' and item.forecast.date = ' + today + ' and (item.forecast.code <= 17 or item.forecast.code >= 37 or item.forecast.code = 35) and item.forecast.code != 3200'
     format: 'json',
     env: 'store://datatables.org/alltableswithkeys',
     appid: YAHOO_API_KEY
   };
+
 
   Parse.Cloud.httpRequest({
     url: url,
