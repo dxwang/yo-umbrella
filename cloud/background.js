@@ -39,7 +39,9 @@ function isGonRain(userLocation, status) {
         console.error('Request failed with response code ' + httpResponse.status);
       }
     });
-  }
+  }, function(error) {
+    // Something went wrong - could not get config
+  });
 }
 
 function notifyIsGonRain(userLocation) {
@@ -53,6 +55,8 @@ function notifyIsGonRain(userLocation) {
         'link': config.get('YO_TO_USER_URL')
       }
     });
-  }
+  }, function(error) {
+    // Something went wrong - could not get config
+  });
 }
 
