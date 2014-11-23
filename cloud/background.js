@@ -12,7 +12,7 @@ Parse.Cloud.job('background', function(request, status) {
       isGonRain(userLocation, status);
     });
   }).then(function() {
-    
+    status.success('Success');
   }, function(error) {
     status.error("Uh oh, something went wrong.");
   });
